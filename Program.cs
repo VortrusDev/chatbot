@@ -7,7 +7,7 @@ namespace Chatbot
     class Program
     {
 
-        const string name = "Rebecca";
+        const string Name = "Rebecca";
         const ConsoleColor BotColor = ConsoleColor.Cyan;
         const ConsoleColor InputColor = ConsoleColor.DarkMagenta;
         string[] Jokes = new string[3]{"You don't need a parachute to go skydiving.\nYou need a parachute to go skydiving twice.",
@@ -19,31 +19,51 @@ namespace Chatbot
                 new Page[]{
                     new Page("...\"Do you really think we should be doing this?\"\n"
                            + "\"Not really, but what other choice do we have?\"\n\n"
-                           + "Billy and Jamie have been arguing like this for hours.")})
+                           + "Billy and Jamie have been arguing like this for hours."),
+                    new Page("Eventually it starts to get really grating, and things\n"
+                           + "take a turn for the tense.")
+                    })
         };
         
         Command[] Commands; //Set in Main 
+        static Program program {get; set;}
 
         static void Main(string[] args)
         {
 
-            Program bot = new Program();
+            SetUpProgram();
 
-            bot.Commands = new Command[]
+            SetUpCommands();
+
+            RunMainLoop();
+
+        }
+
+        static void SetUpProgram()
+        {
+            program = new Program();
+        }
+
+        static void SetUpCommands()
+        {
+            program.Commands = new Command[]
             {
                 //Adding commands to run
-                new Command("quit", "Quits the program.", new Action(bot.Quit)),
-                new Command("help", "Displays all keywords and their uses.", new Action(bot.DisplayHelp)),
-                new Command("joke", "Tells a joke!", new Action(bot.Joke)),
-                new Command("story", "Tells a story!", new Action(bot.ChooseStory))
+                new Command("quit", "Quits the program.", new Action(program.Quit)),
+                new Command("help", "Displays all keywords and their uses.", new Action(program.DisplayHelp)),
+                new Command("joke", "Tells a joke!", new Action(program.Joke)),
+                new Command("story", "Tells a story!", new Action(program.ChooseStory))
             };
+        }
 
+        static void RunMainLoop()
+        {
             bool exit = false; //Exits the program when true. 
 
             while (!exit)
             {
-                bot.Greet();
-                bot.TakeInput();
+                program.Greet();
+                program.TakeInput();
             }
         }
 
@@ -52,7 +72,7 @@ namespace Chatbot
         {
             Console.ForegroundColor = BotColor;
             Console.WriteLine("Hello there! I see this is your first time talking to me!");
-            Console.WriteLine("Nice to meet you! My name's {0}.", name);
+            Console.WriteLine($"Nice to meet you! My name's { Name }.");
             Console.WriteLine("What can I do for you?");
         }
 
@@ -83,7 +103,7 @@ namespace Chatbot
             Console.WriteLine();
             foreach(Command c in Commands)
             {
-                Console.WriteLine("    {0} - {1}", c.name, c.description);
+                Console.WriteLine($"    { c.name } - { c.description }");
                 Console.WriteLine();
             }
         }
@@ -111,7 +131,7 @@ namespace Chatbot
             int i = 0;
             foreach(Story s in stories)
             {
-                Console.WriteLine("    {0} - {1}", i, s.title);
+                Console.WriteLine($"    { i } - { s.title }");
                 i++;
             }
             
@@ -141,6 +161,22 @@ namespace Chatbot
             Console.ForegroundColor = BotColor;
             Console.WriteLine("/////////////////////////////////////////");
             Console.WriteLine(stories[storyNumber].title);
+
+            for (int i = 0; i < stories[storyNumber].pages.Length; i++)
+            {
+                Console.ForegroundColor = BotColor;
+                Console.WriteLine(stories[storyNumber].pages[i].contents);
+
+                Console.WriteLine("Press enter to continue, or type \"quit\" to stop.");
+                Console.ForegroundColor = InputColor;
+
+                string res = Console.ReadLine();
+
+                if (res.ToLower() == "quit")
+                {
+                    break;
+                }
+            }
         }
     }
 }
